@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <!-- Add any additional meta tags, stylesheets, or scripts here -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Bootstrap CSS for styling -->
+    <style>
+        /* Add custom styles here */
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="flash-messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <div class="container">
+        <!-- Container to hold the registration form -->
+        <h2 class="text-center">Register</h2>
+        <!-- Heading for the registration form -->
+        <form method="post" action="/register">
+            <!-- Form element with method set to POST and action attribute specifying the URL to submit the form data -->
+            <div class="form-group">
+                <!-- Form group for the name input -->
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                <!-- Input field for the name with type set to text, class set to form-control for Bootstrap styling, id set to name, name set to name, and placeholder text -->
+            </div>
+            <div class="form-group">
+                <!-- Form group for the email input -->
+                <label for="email">Email address:</label>
+                <!-- Label for the email input field -->
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                <!-- Input field for the email address with type set to email, class set to form-control for Bootstrap styling, id set to email, name set to email, and placeholder text -->
+            </div>
+            <div class="form-group">
+                <!-- Form group for the password input -->
+                <label for="password">Password:</label>
+                <!-- Label for the password input field -->
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                <!-- Input field for the password with type set to password, class set to form-control for Bootstrap styling, id set to password, name set to password, and placeholder text -->
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <!-- Submit button with type set to submit, class set to btn btn-primary btn-block for Bootstrap styling -->
+        </form>
+        <p class="text-center mt-3">Already have an account? <a href="/login">Login</a></p>
+        <!-- Link to the login page -->
+    </div>
+</body>
+</html>

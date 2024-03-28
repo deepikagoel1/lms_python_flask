@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Add any additional meta tags, stylesheets, or scripts here -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Bootstrap CSS for styling -->
+    <style>
+        /* Add custom styles here */
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Container to hold the login form -->
+        <h2 class="text-center">Login</h2>
+        <!-- Heading for the login form -->
+        <form method="post" action="/login">
+            <!-- Form element with method set to POST and action attribute specifying the URL to submit the form data -->
+            <div class="form-group">
+                <!-- Form group for the email input -->
+                <label for="email">Email address:</label>
+                <!-- Label for the email input field -->
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                <!-- Input field for the email address with type set to email, class set to form-control for Bootstrap styling, id set to email, name set to email, and placeholder text -->
+            </div>
+            <div class="form-group">
+                <!-- Form group for the password input -->
+                <label for="password">Password:</label>
+                <!-- Label for the password input field -->
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                <!-- Input field for the password with type set to password, class set to form-control for Bootstrap styling, id set to password, name set to password, and placeholder text -->
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            <!-- Submit button with type set to submit, class set to btn btn-primary btn-block for Bootstrap styling -->
+        </form>
+        <p class="text-center mt-3">Don't have an account? <a href="/register">Register</a></p>
+        <!-- Link to the registration page -->
+        <p class="text-center"><a href="/forgot_password">Forgot Password?</a></p>
+        <!-- Link to the forgot password page -->
+    </div>
+</body>
+</html>

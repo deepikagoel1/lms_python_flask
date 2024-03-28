@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Suggested Interview Questions</h1>
+    <ul>
+        {% for question in questions %}
+            <li>{{ question }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

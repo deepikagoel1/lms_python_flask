@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Interview Form</h1>
+    <form action="{{ url_for('suggested_questions') }}" method="post">
+        <label for="job_role">Job Role:</label>
+        <input type="text" id="job_role" name="job_role" required><br><br>
+        
+        <label for="experience">Experience:</label>
+        <input type="text" id="experience" name="experience" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
