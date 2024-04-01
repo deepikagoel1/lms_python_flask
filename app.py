@@ -1,40 +1,77 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 import string
 import random
 import secrets
 import datetime
+import os 
+from models import TodoList
+from extensions import app, db
+from models import TodoList
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
-import os 
 
-app = Flask(__name__)
-app.config['MAIL_SERVER'] = 'smtp.example.com'  # Your SMTP server address
-app.config['MAIL_PORT'] = 587  # Your SMTP server port
-app.config['MAIL_USERNAME'] = 'your_username@example.com'  # Your SMTP username
-app.config['MAIL_PASSWORD'] = 'your_password'  # Your SMTP password
-app.config['MAIL_USE_TLS'] = True  # Enable TLS encryption
-app.config['MAIL_USE_SSL'] = False  # Disable SSL encryption
-
-# basedir = r"C:\Users\DGT IT\Desktop\Course_LMS"
-
-mail = Mail(app)
-app.secret_key = 'test'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] =\
-#         'sqlite:///' + os.path.join(basedir, 'users.db')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
 class User(db.Model):
+    __bind_key__ = 'user'  # Bind this model to the 'users' database
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
+    
+
+@app.route('/calendar')
+def calendar():
+    todos = TodoList.query.all()
+    return render_template('calendar.html', todos=todos)
+
+# Create
+@app.route('/todo/add', methods=['POST'])
+def add_todo():
+    title = request.form['title']
+    description = request.form['description']
+    due_date = datetime.datetime.strptime(request.form['due_date'], '%Y-%m-%d')
+
+
+    todo = TodoList(title=title, description=description, due_date=due_date)
+    db.session.add(todo)
+    db.session.commit()
+
+    flash('Todo list added successfully', 'success')
+    return redirect(url_for('index'))
+
+# Update
+@app.route('/todo/<int:id>/update', methods=['GET', 'POST'])
+def update_todo(id):
+    todo = TodoList.query.get_or_404(id)
+
+    if request.method == 'POST':
+        todo.title = request.form['title']
+        todo.description = request.form['description']
+        todo.due_date = datetime.datetime.strptime(request.form['due_date'], '%Y-%m-%d')
+
+        db.session.commit()
+        flash('Todo list updated successfully', 'success')
+        return redirect(url_for('index'))
+
+    return render_template('update_todo.html', todo=todo)
+
+# Delete
+@app.route('/todo/<int:id>/delete', methods=['POST'])
+def delete_todo(id):
+    todo = TodoList.query.get_or_404(id)
+    db.session.delete(todo)
+    db.session.commit()
+    flash('Todo list deleted successfully', 'success')
+    return redirect(url_for('index'))
+
+
 class PasswordReset(db.Model):
+    __bind_key__ = 'user'  # Bind this model to the 'users' database
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     otp = db.Column(db.String(6), nullable=False)
@@ -70,14 +107,14 @@ def login():
         if user:
             # Handle successful login
             session['user_id'] = user.id
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('home'))
         else:
             return render_template('login.html', error='Invalid email or password')
     
     return render_template('login.html')
 
-@app.route('/dashboard')
-def dashboard():
+@app.route('/home')
+def home():
     if 'user_id' in session:
         # Retrieve user data from database based on session['user_id']
         user_id = session['user_id']
@@ -85,13 +122,14 @@ def dashboard():
         
         if user:
             # Pass user data to dashboard template
-            return render_template('home.html', user=user)
+            return render_template('home.html', user=user)  # Pass user object to the template
         else:
             # Handle case where user_id is invalid or user doesn't exist
             return redirect(url_for('login'))
     else:
         # Redirect to login page if user is not logged in
         return redirect(url_for('login'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -172,14 +210,16 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
-@app.route('/home')
-def home():
-    return render_template('home.html')
+def get_active_dates():
+    # Query the database to fetch active dates
+    today = date.today()
+    active_dates = Event.query.filter(Event.date >= today).distinct(Event.date).all()
+    
+    # Extract unique active dates from the query results
+    active_dates = [event.date.strftime('%Y-%m-%d') for event in active_dates]
+    
+    return active_dates
 
-@app.route('/calendar')
-def calendar():
-    # Logic to fetch active dates and to-do list can be added here
-    return render_template('calendar.html')
 
 @app.route('/placement_prep')
 def placement_prep():
